@@ -56,6 +56,15 @@
   min-height: 20px;
   border: 1px dashed #ddd;
 }
+.responsive-img {
+  max-width: 100%;  /* 图片最大宽度为容器宽度 */
+  height: auto;     /* 高度自动，保持宽高比 */
+  display: block;   /* 消除图片下方的间隙 */
+}
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
      </style>
   
     
@@ -84,7 +93,7 @@
       padding: px;
       margin-top: px;
     ">
-     <img src="https://i.imgs.ovh/2025/12/05/C9Hd1N.jpeg" alt="好看的" border="3" > 
+     <img src="https://i.imgs.ovh/2025/12/05/C9Hd1N.jpeg" alt="好看的" border="3" class="responsive-img center" > 
     </div> 
     <div style="
       background-color: #f1f1f1;
@@ -92,7 +101,7 @@
       padding: px;
       margin-top: px;
     ">
-     <img src="https://i.imgs.ovh/2025/12/05/C9HPTr.png" alt="好看的" border="3" > 
+     <img src="https://i.imgs.ovh/2025/12/05/C9HPTr.png" alt="好看的" border="3" class="responsive-img center" > 
     </div> 
 
     <div class="quiz-container">  
