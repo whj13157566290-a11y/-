@@ -1,286 +1,554 @@
 <!DOCTYPE html>
 <!-- saved from url=(0040)https://whj13157566290-a11y.github.io/-/ -->
-<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>一つ普通のサイト</title>
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>一つ普通のサイト</title>
+
+  <style>
    
-     <style>
-  /*基本样式*/
-.option {
-  padding: 12px;/*内边距*/
-  margin: 8px;/* 外边距*/
-  border: 1px solid #ddd;/* 边框 */
-  border-radius: 6px; /* 圆角 */
-  cursor: pointer; /* 鼠标 */
-  transition: all 0.3s; /* 过渡动画 */
-}
-/*鼠标*/
-.option:hover {
-  background-color: #b6dbe0; 
-}
-/*正确的样式*/
-.correct {
-  background-color: #d4edda;/* 背景 */
-  text-align: center;/*文字居中*/
-  border-color: #28a745; /* 边框 */
-}
-/*错误的样式*/
-.wrong {
-  background-color: #f8d7da;/* 背景 */
-  text-align: center;/*文字居中*/
-  border-color: #dc3545;/* 边框 */
-}
-/* 结果显示的样式 */
-.result {
-  margin-top: 20px;/* 上方留出间距 */
-  padding: 15px;/* 内边距 */
-  border-radius: 6px;/* 圆角 */
-  font-weight: bold; /* 粗体文字 */
-}
-/*问题容器 */
-.quiz-container {
-  margin-bottom: 30px;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-/*每个问题的结果区域 */
-.question-result {
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  min-height: 20px;
-  border: 1px dashed #ddd;
-}
-.responsive-img {
-  max-width: 100%;  /* 图片最大宽度为容器宽度 */
-  height: auto;     /* 高度自动，保持宽高比 */
-  display: block;   /* 消除图片下方的间隙 */
-}
-.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-     </style>
-  
+    .floating-font1 {
+      height: 80px;
+      margin-top: 50px;
+      box-shadow: #00bfff;
+      transition: all 0.3s ease;
+    }
+    .floating-font1:hover {
+      color: #4fdc70;
+      box-shadow: 0 5px 30px rgb(9, 87, 222);
+      transform: translateY(-5px);
+    } .floating-font {
+      box-shadow: #00bfff;
+      transition: all 0.3s ease;
+    }
+    .floating-font:hover {
+      color: #4fdc70;
+      box-shadow: 0 5px 30px rgb(222, 9, 9);
+      transform: translateY(-5px);
+    }
     
-  </head>
-  <body>
-     <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">1.『打上花火』（うちあげはなび）　何ですか？
-       </p> 
-        <div class="option" data-answer="wrong">1.スキルです</div>
-        <div class="option" data-answer="correct">2. 花火大会（はなびたいかい）です</div>
-        <div class="option" data-answer="wrong">3. 氏名（しめい）です</div>
-        <div class="option" data-answer="wrong">4. ところです</div>
-        <div class="question-result"> 
-        </div>
-    </div>
+    /*1.浮动动画*/
+    .floating-card {
+      border: 15px #00bfff;
+      color: #202020; 
+      background-color: rgba(234, 234, 234, 0.664);
+      border-radius: 12px;
+      /* 圆角 */
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+      /*div的阴影*/
+      transition: all 0.3s ease;
+      /*浮动的过渡动画 */
+    }
 
-  
-    <div style="
-      background-color: #f1f1f1;
+    .floating-card:hover {
+      background-color: #00bfff;
+      color: #e6e6e6;
+      box-shadow: 0 15px 35px rgba(17, 116, 255, 0.5);
+      transform: translateY(-5px);
+      /* 浮起5像素 */
+    }
+
+    .my-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      color: black;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .my-button:hover {
+      background-color: #00bfff;
+      color: rgb(255, 255, 255);
+      box-shadow: 0 8px 16px 0 rgba(0, 234, 255, 0.7);
+      transform: translateY(-5px);
+      /* 浮起5像素 */
+    }
+
+    /*2.基础样式，让效果更明显 */
+    /*基本样式*/
+    .option {
       text-align: center;
-      padding: px;
-      margin-top: px;
-    ">
-     <img src="https://i.imgs.ovh/2025/12/05/C9Hd1N.jpeg" alt="好看的" border="3" class="responsive-img center" > 
-    </div> 
-    <div style="
-      background-color: #f1f1f1;
+      font-weight: bold;
+      font-size: 20px;
+      color: #005b79;
+      height: 200px;
+      /*长*/
+      width: 300px;
+      /*宽*/
+      padding: 20px;
+      /*内边距*/
+      margin:auto;
+      /* 外边距*/
+      border: 2px solid #00bfff;
+      /* 边框 */
+      border-radius: 40px;
+      /* 圆角 */
+      cursor: pointer;
+      /* 鼠标 */
+      transition: all 0.3s;
+      /* 过渡动画 */
+      display: flex;
+      /* 启用弹性布局 */
+      justify-content: center;
+      /* 水平居中 */
+      align-items: center;
+      /* 垂直居中 */
+    }
+
+    /*鼠标
+    .option:hover {
+      background-color: #b6dbe0;
+    }
+*/
+    /*正确的样式*/
+    .correct {
+      color: #ffffff;
+      background-color: #4CAF50;
+      /* 背景 */
       text-align: center;
-      padding: px;
-      margin-top: px;
-    ">
-     <img src="https://i.imgs.ovh/2025/12/05/C9JjoL.png" alt="好看的" border="3" class="responsive-img center" > 
-    </div> 
+      /*文字居中*/
+      border-color: #4fdc70;
+      /* 边框 */
+    }
 
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">2.よかたっら、どんな服を着ますか？
-       </p> 
-        <div class="option" data-answer="wrong">1.スーツ</div>
-        <div class="option" data-answer="wrong">2. コート</div>
-        <div class="option" data-answer="correct">3. 浴衣（ゆかた）</div>
-        <div class="option" data-answer="wrong">4. 何でもいい</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">3.花火大会を開催すること、よくいつですか？
-       </p> 
-        <div class="option" data-answer="wrong">1. 春</div>
-        <div class="option" data-answer="correct">2. 夏</div>
-        <div class="option" data-answer="wrong">3. 秋</div>
-        <div class="option" data-answer="wrong">4. 冬</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">4.起源（きげん）はいつですか？
-       </p> 
-        <div class="option" data-answer="correct">1. 	江戸時代（えどじだい）</div>
-        <div class="option" data-answer="wrong">2. 平成時代（	へいせいじだい）</div>
-        <div class="option" data-answer="wrong">3. 昭和時代（しょうわじだい）</div>
-        <div class="option" data-answer="wrong">4. 	明治時代（めいじじだい）</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">5.花火大会はどこにありますか？
-       </p> 
-        <div class="option" data-answer="wrong">1. 名古屋</div>
-        <div class="option" data-answer="wrong">2. 東京と大阪</div>
-        <div class="option" data-answer="correct">3. 全日本にあります</div>
-        <div class="option" data-answer="wrong">4. 関西地域（かんさいちいき）</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">6.始めるの時間はいつですか
-       </p> 
-        <div class="option" data-answer="wrong">1. 夜になるのとき</div>
-        <div class="option" data-answer="correct">2. 昼</div>
-        <div class="option" data-answer="wrong">3. 晩ご飯のとき</div>
-        <div class="option" data-answer="wrong">4. 夕方</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">7.期間に何ができませんすか？
-       </p> 
-        <div class="option" data-answer="wrong">1. 花火を見ることができます</div>
-        <div class="option" data-answer="correct">2. 人を打つ（うつ）ことができます</div>
-        <div class="option" data-answer="wrong">3. いろなイベントを参加することができます</div>
-        <div class="option" data-answer="wrong">4. 彼女と、デートすることができます</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:25px;
-        font-weight:bold;
-       ">8.大会後、何を必要しなければならないですか
-       </p> 
-        <div class="option" data-answer="wrong">1. ごみを持て帰らなければならないです</div>
-        <div class="option" data-answer="correct">2. 彼女を送らなければならないです</div>
-        <div class="option" data-answer="wrong">3. 家を帰らなければならないです</div>
-        <div class="option" data-answer="wrong">4. 残業をしなければならないです</div>
-        <div class="question-result"> 
-        </div>
-    </div>
-    <div class="quiz-container">  
-    <p style="
-       padding-bottom: 10px;
-        color: red;
-        font-size:40px;
-        font-weight:bold;
-        text-align: center;
-       ">花火大会を行ってみたいですか？
-       </p> 
-        </div>
-    </div>
-    
+    /*错误的样式*/
+    .wrong {
+      background-color: #ea4755;
+      /* 背景 */
+      text-align: center;
+      /*文字居中*/
+      border-color: #010101;
+      /* 边框 */
+    }
 
-    
-        
- 
+    /* 结果显示的样式 */
+    .result {
+      margin-top: 20px;
+      /* 上方留出间距 */
+      padding: 15px;
+      /* 内边距 */
+      border-radius: 6px;
+      /* 圆角 */
+      font-weight: bold;
+      /* 粗体文字 */
+    }
 
+    /*选项容器 */
+    .quiz-container {
+      width: auto;
+      height: 370px;
+      margin: 10px;
+      border-radius: 10px;
+      display: flex;
+      margin-bottom: px;
+      padding: 0px;
+      border: 1px solid #00bfff;
+      background-color: #343434;
+      flex-direction: column;
+      /* 新增：改为纵向排列 */
+      align-items: flex-start;
+      /* 新增：内容左对齐 */
+    }
+    /*问题容器*/
+     .quiz-container1 {
+      width: auto;
+      height: auto;
+      margin: 10px;
+      border-radius: 10px;
+      display: flex;
+      margin-bottom: px;
+      padding: 0px;
+      border: 1px solid #00bfff;
+      background-color: #343434;
+    }
+
+    /*让选项水平排列 */
+    .quiz-container:nth-of-type(2) {
+      display: flex;
+      flex-direction: row;
+      /* 横向排列选项 */
+      flex-wrap: wrap;
+      /* 允许换行 */
+      justify-content: space-between; /* 让选项均匀分布 */
+
+    }
+
+    /*每个问题的结果区域 */
+    .question-result {
+      margin-top: 0px;
+      padding: 30px;
+      border-radius: 100px;
+      font-weight: bold;
+      height: 15px;
+      width: 50%;
+      /*border: 1px dashed #000000;*/
+      margin-left: auto;
+      margin-right: auto;
+      /* 居中*/
+      display: block;
+      /* 确保它是块级元素 */
+    }
+
+    .responsive-img {
+      max-width: none;
+      /* 图片最大宽度为容器宽度 */
+      height: auto;
+      /* 高度自动，保持宽高比 */
+      display: block;
+      /* 消除图片下方的间隙 */
+    }
+     
+  
+  </style>
+
+
+</head>
+
+<body style="background-color: #0b0b0b;">
+  <div>
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">1.『着物』（きもの）何ですか？
+      </p>
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="correct">1.日本の伝統的（でんとうてき（な））の服装（ふくそう）</div>
+      <div class="floating-card option" data-answer="wrong">2. 一種類のコート</div>
+      <div class="floating-card option" data-answer="wrong">3. 仮面ライだの服装</div>
+      <div class="floating-card option" data-answer="wrong">4. 社長の専属（せんぞく）服装</div>
+      <div class="question-result"></div>
+    </div>
 
     <div>
+      <div style="
+      background-color: #0b0b0b;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      margin: 10px;
+    ">
+      <img src="https://i.imgs.ovh/2025/12/05/C9Hd1N.jpeg" alt="好看的" border="1" class="responsive-img center" style="border-radius: 12px;color: #00bfff;">
+      </div>
+      <p style="color: #00bfff;
+      text-align: center;
+      font-size: 20px;">
+        莫さんとしんさんと熊さんは友だちです、今回、莫さんと熊さん、花火大会を行きたいので、着物を選びます、でも、種類はたくさんがあります、<br>しんさんの会社はいつも花火大会の建設が参加されます、それて、二人でしんさんに電話して質問しています
+      </p>
+      <div style="color: #00bfff;
+      font-size: 20px;
+      padding-left:10em; 
+      ">
+      <p>莫：こんにちは</p>
+<p>熊：こんにちは。今日の１９時に花火大会があると聞きましたね</p>
+<p>莫：いいね、熊さん、一緒に行きませんか？</p>
+<p>熊：はい、ぜひ一緒に行きますけど、どんな服を着たらいいですか？</p>
+<p>莫：花火大会そうだな、着物のほうがいいです</p>
+<p>熊:&nbsp;&nbsp;&nbsp;¿&nbsp;&nbsp;&nbsp;それは何ですか？</p>
+<p>莫：浴衣ですよ</p>
+<p>熊：浴衣ですか、わかりました</p>
+<p>莫：でも、浴衣の種類はたくさんあります、どんな着物を着たらいいですか</p>
+<p>熊：そうですね、うえん...誰か、わかりますか？</p>
+<p>莫：これは....だれか？...ああ、そうだ、しんさん！</p>
+<p>熊：しんさん？</p>
+<p>莫：はい、しんさんの会社はいつも花火大会の建設が参加されているそうです</p>
+<p>熊：え！そなんですか？</p>
+<p>莫：emmmmm...忘れましたね、だれか、と言っていました...</p>
+<p>熊：emmmm...じゃ、しんさんに電話されますか</p>
+<p>莫：いいね、今します</p>
+<p>didadi~~~</p>
+<p>しん：もしもし、しんです、莫さん、どうしたんですか</p>
+<p>莫：もしもし、莫です、しんさん、今回は、一つことがお願いします</p>
+<p>しん：いいよ、なんですか？</p>
+<p>莫：今日は花火大会があると聞きましたけど、熊さんと二人で着物が着られますか..着物の種類はたくさんあるので、選ぶ方、全然分からない、しんさんはわかったら、教えてもらえませんか？</p>
+<p>しん：あっ、着物ですね、ちっよといい、最近、会社は花火大会の建設ために、たくさん関連（かんれん）メッセージをもらったんですよ、私もたくさん了解した、花火とか、着物とか</p>
+<p>莫：そうですか！お願いします</p>
+<p>しん：はい、説明しますね。着物は奈良時代から出現（しゅつげん）の服装で、中国に、『格』（かく）の概念があって、着物の正式（せいしき）レベルという意味です、通常に振袖（ほんふりそで）あの種類は一番高いで、結婚の時も着られて、打掛（うちかけ）も着られます、</p>
+<p>でもあの種類はすごく高くて、とても正式（せいしき）です、ただ、花火大会のは、浴衣のほうがいいですよ</p>
+<p>莫：そうですか、わかった、あと、どやって着たらいいですか</p>
+<p>しん：ちょっと難しいけど、面白いですよ、ネットで調べくださいね、着物のお店の店員も教えますよ</p>
+<p>莫：そうですか、ありがとうございました、しんさん、今日も一緒に行きませんか？</p>
+<p>しん：すみません、仕事が忙しいので...</p>
+<p>莫：そうですか、残念です</p>
+<p>電話が終わりました....</p>
+<p>熊：どうですか？</p>
+<p>莫：浴衣が着られそうです。</p>
+<p>あ、アニメの中の着物と似ているの着物ですね、決めますか？</p>
+<p>莫：いいよ</p>
+<p>熊：そうだ、電話している時、着るの方法はネットで調べました</p>
+<p>莫：どんな方法ですか</p>
+<p>熊：．．．とりあいず、難しいで、ほら、来て見てください</p>
+<p>莫：まあまあですね、大丈夫、問題ない、お店の店員さんは私たちが教えますよ</p>
+<p>熊：そなんですか、心配しなかったですね</p>
+    </div>
+      <div style="
+      background-color: #0b0b0b;
+      padding: px;
+      margin-top: px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      margin: 10px;
+    ">
+        <img src="https://i.img.ovh/2025/12/05/C9JjoL.png" alt="好看的" border="3" class="responsive-img center" style="border-radius: 12px;color: #00bfff;">
+      </div>
+      </div>
+       <div>
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">2.着物はいつ出現（しゅつげん）ですか？
+      </p>
+    </div>
 
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1.江戸（えど）時代</div>
+      <div class="floating-card option" data-answer="wrong">2. 平安（へいあん）時代</div>
+      <div class="floating-card option" data-answer="correct">3. 奈良時代</div>
+      <div class="floating-card option" data-answer="wrong">4. 室町（むろまち）時代</div>
+      <div class="question-result"></div>
+    </div> <div>
+       <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">3.中国に、着物について、『格』の概念（がいねん）があって、何意味ですか？
+      </p>
+    </div>
 
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1.着物のもよう(花纹的意思)</div>
+      <div class="floating-card option" data-answer="wrong">2. 着物の値段</div>
+      <div class="floating-card option" data-answer="correct">3. 着物の正式（せいしき）レベル（等级）</div>
+      <div class="floating-card option" data-answer="wrong">4. 着物の色</div>
+      <div class="question-result"></div>
+    </div> <div>
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">4.通常（つうじょう）に以下の着物どちらが一番高いですか？
+      </p>
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="correct">1.本振袖（ほんふりそで）</div>
+      <div class="floating-card option" data-answer="wrong">2. 付け下げ（つけさげ）</div>
+      <div class="floating-card option" data-answer="wrong">3. 浴衣（ゆかた）</div>
+      <div class="floating-card option" data-answer="wrong">4. 紬（つむぎ）</div>
+      <div class="question-result"></div>
+    </div> <div>
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">5.結婚の時、どんな着物が着られますか？
+      </p>
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1.訪問着（ほうもんぎ）</div>
+      <div class="floating-card option" data-answer="wrong">2. 羽織（はおり）</div>
+      <div class="floating-card option" data-answer="wrong">3. 留袖（とめそで）</div>
+      <div class="floating-card option" data-answer="correct">4. 打掛（うちかけ）</div>
+      <div class="question-result"></div>
+    </div> <div>
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">6.振袖（ふりそで）のは、どんな人が着られますか？
+      </p>
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1.結婚した女性が着られます</div>
+      <div class="floating-card option" data-answer="wrong">2. 結婚していなかったら、誰でもいいです</div>
+      <div class="floating-card option" data-answer="correct">3. 女性が結婚していなかったら、着られます</div>
+      <div class="floating-card option" data-answer="wrong">4. 年上（としうえ）の人が着られます</div>
+      <div class="question-result"></div>
+    </div> <div>
+       <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">7.通常（つうじょう）、襟（えり）はどんな要求（ようきゅう）がありますか？
+      </p>
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1.左襟は一番上です</div>
+      <div class="floating-card option" data-answer="correct">2. 右襟は一番上です</div>
+      <div class="floating-card option" data-answer="wrong">3. 何でもいい</div>
+      <div class="floating-card option" data-answer="wrong">4. わからないです</div>
+      <div class="question-result"></div>
+    </div> <div>
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">8.熊（ゆう）さんは着物のきる方法の感想について、どんな感想ですか？
+      </p>ｕ
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="correct">1...とりあいず、すごく難しいです</div>
+      <div class="floating-card option" data-answer="wrong">2. 簡単です</div>
+      <div class="floating-card option" data-answer="wrong">3. 簡単で、面白いです</div>
+      <div class="floating-card option" data-answer="wrong">4. まあまあです</div>
+      <div class="question-result"></div>
+    </div> <div>
+   
+    <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">9.しんさんは着物のきる方法の感想について、どんな感想ですか？
+      </p>
+    </div>
+
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1...とりあいず、すごく難しいです</div>
+      <div class="floating-card option" data-answer="wrong">2. 簡単です</div>
+      <div class="floating-card option" data-answer="correct">3. 難しいけど、面白いです</div>
+      <div class="floating-card option" data-answer="wrong">4. まあまあです</div>
+      <div class="question-result"></div>
+    </div> <div>
       
-<script>
-// 获取所有问题
-const quizContainers = document.querySelectorAll('.quiz-container');
+        <div class="quiz-container1">
+      <p style="
+       padding-bottom: 10px;
+        color: rgb(215, 215, 215);
+        font-size:25px;
+        font-weight:bold;
+        text-indent: 2em;
+       ">10.莫（ばく）さんは着物のきる方法の感想について、どんな感想ですか？
+      </p>
+    </div>
 
-// 每个单独处理
-quizContainers.forEach(container => {
-  // 获取当前所有选项
-  const options = container.querySelectorAll('.option');
-  
-  // 获取当前结果区域
-  const resultArea = container.querySelector('.question-result');
-  
-  // 为当前选项添加点击
-  options.forEach(option => {
-    option.addEventListener('click', function() {
-      // 1. 清除当前容器内所有选项的状态
-      options.forEach(opt => {
-        opt.classList.remove('correct', 'wrong');
-      });
+    <div class="quiz-container">
+      <div class="floating-card option " data-answer="wrong">1...とりあいず、すごく難しいです</div>
+      <div class="floating-card option" data-answer="wrong">2. 簡単です</div>
+      <div class="floating-card option" data-answer="wrong">3. 簡単で、面白いです</div>
+      <div class="floating-card option" data-answer="correct">4. まあまあです</div>
+      <div class="question-result"></div>
+    </div> <div>
+      <div style="color: #00bfff;
+      font-size: 35px;
+      text-align: center;
+      "
+      class="floating-font1"
+      >
+       <p style="padding: 10px;">もし日本に行ったら、何をするつもりですか？何でもいいよ、話してください</p>
+      </div>
       
-      // 2. 标记当前点击的选项
-      const isCorrect = this.getAttribute('data-answer') === 'correct';
-      this.classList.add(isCorrect ? 'correct' : 'wrong');
-      
-      // 3. 在当前容器内的结果区域显示结果
-      if (isCorrect) {
-        resultArea.textContent = 'そうです！すごくエヌビ（NB）ですね';
-        resultArea.className = 'question-result correct';
-      } else {
-        resultArea.textContent = 'だめよ、もっとしてみてください';
-        resultArea.className = 'question-result wrong';
-      }
-    });
-  });
-});
-</script>
+    
 
-<p style="
-text-align: center;
-">ajdaiwnifn</p>
-      
-    <div style="
-text-align: center;>
-    <p style="
-text-align: center;
+<p>这&nbsp;&nbsp;&nbsp;&nbsp;里有多个空格</p >
+<p>姓名：&nbsp;&nbsp;张三</p >
+<p>缩进&nbsp;&nbsp;&nbsp;&nbsp;效果</p >
+ 
 
-    >视频网站</p>
-    <a href="https://www.bilibili.com/video/BV1hY411j7UM?spm_id_from=333.788.videopod.sections&vd_source=e72381f3c61cb51c20f3d15fe941b830" text-align: center>教程链接</a>
+        <div style="text-align: center;place-items: center;"> 
+         <p style="color: #00bfff;">建設している~~~~~~</p>
+         <div style="color: #005b79;" onclick="myFunction1('グルグルしています',',hu~~~~~')"><button class="option my-button">¿</button></div>
+         <button class="my-button" onclick="myFunction('あきらめる','abandon')">点击这里</button><!--点击按钮-->
+         <button class="my-button" onclick="myFunction('Harry Potter', 'Wizard')">点击这里</button><!--点击按钮-->
+        </div>
+
+                  <div>
+                    <script>
+                      function myFunction1(name, job) {
+                        alert("abandon " + name + ", 放弃 " + job);
+                      }
+                      function myFunction(name, job) {
+                        alert("abandon " + name + ", 放弃 " + job);
+                      }
+                      // 获取所有问题
+                      const quizContainers = document.querySelectorAll('.quiz-container');
+
+                      // 每个单独处理
+                      quizContainers.forEach(container => {
+                        // 获取当前所有选项
+                        const options = container.querySelectorAll('.option');
+
+                        // 获取当前结果区域
+                        const resultArea = container.querySelector('.question-result');
+
+                        // 为当前选项添加点击
+                        options.forEach(option => {
+                          option.addEventListener('click', function () {
+                            // 1. 清除当前容器内所有选项的状态
+                            options.forEach(opt => {
+                              opt.classList.remove('correct', 'wrong');
+                            });
+
+                            // 2. 标记当前点击的选项
+                            const isCorrect = this.getAttribute('data-answer') === 'correct';
+                            this.classList.add(isCorrect ? 'correct' : 'wrong');
+
+                            // 3. 在当前容器内的结果区域显示结果
+                            if (isCorrect) {
+                              resultArea.textContent = 'そうです！すごくエヌビ（NB）ですね';
+                              resultArea.className = 'question-result correct';s
+                            } else {
+                              resultArea.textContent = 'だめよ、もっとしてみてください';
+                              resultArea.className = 'question-result wrong';
+                            }
+                          });
+                        });
+                      });
+                    </script>
+                    <p style="text-align: center;">ajdaiwnifn</p>
+
+                      <p style= "text-align: center;color: #00bfff;">视频网站</p>
+                    <div 
+                    class="floating-font"
+                    style="text-align: center;">
+                  
+                      <a style="color: #00bfff;"
+                      href="https://www.bilibili.com/video/BV1hY411j7UM?spm_id_from=333.788.videopod.sections&vd_source=e72381f3c61cb51c20f3d15fe941b830"
+                      text-align: center>教程链接</a>
+                    </div>
+                  </div>
     </div>
 
 
 </body>
+
 </html>
