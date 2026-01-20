@@ -218,6 +218,8 @@
       margin: 20px;
       overflow-y: auto;
       overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 191, 255, 0.7) rgba(255, 255, 255, 0.3);
     }
 
     .tuxian {
@@ -225,6 +227,38 @@
       width: auto;
       border: 1px solid #00bfff;
       background-color: #1d1d1d;
+      position: relative;
+      cursor: help;
+    }
+    .tuxian-tishi{
+      text-align: center;
+      height: 100px;
+      width: 250px;
+      color: #00bfff9a;
+      background-color: #1a1a1a;
+      border: 3px solid #00bfff;
+      border-radius: 15px;
+      position: absolute;
+      overflow-y: auto;
+      overflow-x: auto;
+      opacity: 0;
+      padding: 8px 8px;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+      /*div的阴影*/
+      transition: all 0.3s ease;
+      z-index: 10000;
+      font-family:KaiTi;
+      font-size: 15px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 191, 255, 0.3) rgba(255, 255, 255, 0.1);
+      /* pointer-events: none; */
+     
+    }
+    
+    
+    .tuxian:hover .tuxian-tishi {
+      opacity: 0.9;
+      transform: translateY(10);
     }
 
     .fuchaung {
@@ -241,6 +275,8 @@
       font-family: Arial, sans-serif;
       overflow-y: auto;
       overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(13, 94, 201, 1) rgba(43, 59, 200, 0.272);
     }
 
     .fuchaungbiaoti {
@@ -252,16 +288,6 @@
       width: 500px;
       height: auto;
       background-color: #0b0b0b;
-    }
-
-    .bofang {
-      height: 30px;
-      width: 30px;
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background-color: #4fdc70;
-      
     }
   </style>
 
@@ -309,18 +335,18 @@
           <p style="font-size: 15px;
 color: #b9b9b94e;">目立つ（めだつ）の部分はすごく大切で、気をつけてください</p>
           <p style="text-align: center;font-size: 35px;font-weight: bolder;">今日の話題は<span class="tuxian"
-              style="color: #00bfff;font-weight: bold;">D.「日本の新年」</span></p>
+              style="color: #00bfff;font-weight: bold;">D.「日本の新年」<span class="tuxian-tishi" style="bottom: -240%;left: 50%;transform: translateX(-50%);" >日本に毎年の一月一日の時、新年で、も日本の一年中の一番大切なのお祭りで、大多数人がお祝えて行きます。この情報（じょうほう）は日本の外務省サイトに調べたからです。<a style="color: #4fdc70;"href=https://web-japan.org/trends/cn/quiz/answer05.html>https://web-japan.org/trends/cn/quiz/answer05.html</a></span></span></p>
           <p>日本の新年は毎年の一月一日、だからこそ、も<span class="tuxian"
-              style="color: #00bfff;font-weight: bold;">E.「正月」（しょうがつ）</span>という名前みたいです</p>
+              style="color: #00bfff;font-weight: bold;">E.「正月」（しょうがつ）<span class="tuxian-tishi" style="bottom: 100%;left: 50%;transform: translateX(-50%);" >日本の新年で、時間は毎年の一月一日，これのために、正月といいます。今新暦を使っています、この前に、西暦１８７３年、西洋化（せいようか）に早くなる、欧米（おうべい）の暦に合わせるために、旧暦があきらめて使います</span></span>という名前みたいです</p>
           <p>よく会社新年の休暇（きゅうか）は<span class="tuxian"
-              style="color: #00bfff;font-weight: bold;">C.先年の十二月二十九日から来年の一月三日まで</span>です</p>
+              style="color: #00bfff;font-weight: bold;">C.先年の十二月二十九日から来年の一月三日まで<span class="tuxian-tishi" style="bottom: 100%;left: -30%;transform: translateX(-50%);" >よく、日本の会社の新年休暇は１２．２９日から来年１.３日までけど、会社によって、ちょっと違って、自分の会社の情報を調べてください</span></span>です</p>
           <p>昔に旧暦（きゅうれき）も使っていましたけど、<span class="tuxian"
-              style="color: #00bfff;font-weight: bold;">A.1873年</span>から使っていませんでした、原因はわかりません</p>
+              style="color: #00bfff;font-weight: bold;">A.1873年<span class="tuxian-tishi" style="bottom: -250%;left: -160%;transform: translateX(-50%);" >当時に西洋化（せいようか）に早くなる、欧米（おうべい）の暦に合わせるために、旧暦があきらめて使います</span></span>から使っていませんでした、原因はわかりません</p>
           <p>まず、大掃除がされるとか、飾り（かざり）が飾れるるとか、<span class="tuxian"
-              style="color: #00bfff;font-weight: bold;">F.大晦日、12.31の時</span>（おおみそか）の時、年越しそば（としこしそば）が食べられるとか、除夜の鐘（じょやのかね）が聞けるとか、ネットで調べて、除夜の鐘は１０８回を聞く必要があります、理解しませんけど、わかりました
+              style="color: #00bfff;font-weight: bold;">F.大晦日（おおみそか）、12.31の時<span class="tuxian-tishi" style="bottom: 100%;left: 143%;transform: translateX(-50%);" >日本の大晦日と中国の大晦日は同じですけど、日本の日時は新暦の１２．３１日、中国は旧暦の１２．３１日です。あの日に皆さんは大掃除するし、テレビで赤白歌会をみるし、家族と幸運（こううん）を象徴（しょうちょう）する蕎麦食べるしし</span></span>（おおみそか）の時、年越しそば（としこしそば）が食べられるとか、除夜の鐘（じょやのかね）が聞けるとか、ネットで調べて、除夜の鐘は１０８回を聞く必要があります、理解しませんけど、わかりました
           </p>
           <p>新年の当日と後（とうじつ）、<span class="tuxian"
-              style="color: #00bfff;font-weight: bold;">B.神社に行くことができる、そして、大多数（だいたすう）の人も行ける。</span>いろなごちそうを食べられるとか、成年人なら、子供にお年玉（おとしだま）をあげること必要があります。
+              style="color: #00bfff;font-weight: bold;">B.神社に行くことができる、そして、大多数（だいたすう）の人も行ける。<span class="tuxian-tishi" style="bottom: 100%;left: 100%;transform: translateX(-50%);" >新年の第一日には、大多数人に神社に選んでいきます。本年の幸運ために、お祈りして行きます</span></span>いろなごちそうを食べられるとか、成年人なら、子供にお年玉（おとしだま）をあげること必要があります。
           </p>
           <p style="text-align: center;font-size: 35px;font-weight: bolder;"><span class="tuxian"
               style="color: #ff0000;font-weight: bold;">以上の資料（しりょう）はネットで調べた、正しいかわかりません。</span></p>
