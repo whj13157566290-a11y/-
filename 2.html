@@ -1,0 +1,2203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>四方大陆 · 三国内政地图</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #1a1a2e;
+        font-family: "Noto Serif SC", "SimSun", "宋体", serif;
+      }
+      .map-wrapper {
+        position: relative;
+        width: 800px;
+        height: 800px;
+      }
+      #world-view,
+      #donghua-view,
+      #western-view,
+      #vigland-view {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #donghua-view,
+      #western-view,
+      #vigland-view {
+        display: none;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+      }
+      .return-btn {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #e2e8f0;
+        border: 1px solid #4a5568;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "Noto Serif SC", "SimSun", "宋体", serif;
+        font-size: 14px;
+        z-index: 10;
+        transition: background 0.3s;
+      }
+      .return-btn:hover {
+        background: rgba(0, 0, 0, 0.9);
+        border-color: #fbbf24;
+        color: #fbbf24;
+      }
+
+      /* 世界地图 */
+      .country {
+        stroke: #ffffff;
+        stroke-width: 2;
+        stroke-linejoin: round;
+        transition:
+          filter 0.3s,
+          stroke-width 0.3s;
+        cursor: pointer;
+      }
+      .country:hover {
+        filter: brightness(1.4) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+        stroke-width: 3;
+      }
+      .country.dimmed {
+        filter: brightness(0.5);
+        opacity: 0.7;
+      }
+      .country-label {
+        fill: #ffffff;
+        font-weight: bold;
+        text-anchor: middle;
+        pointer-events: none;
+        text-shadow: 0 1px 6px #00000080;
+        letter-spacing: 0.08em;
+      }
+      .detail-label {
+        fill: #e0e0e0;
+        font-size: 13px;
+        text-anchor: middle;
+        pointer-events: none;
+        text-shadow: 0 1px 4px #00000060;
+      }
+      .title {
+        fill: #e2e8f0;
+        font-size: 22px;
+        font-weight: bold;
+        text-anchor: middle;
+        letter-spacing: 0.15em;
+      }
+
+      /* 东华皇朝 */
+      .province {
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+        stroke-width: 0.9;
+        vector-effect: non-scaling-stroke;
+        stroke-linejoin: round;
+      }
+      .province.core {
+        fill: #fdf05c;
+        fill-opacity: 0.45;
+        stroke: #ffffff;
+      }
+      .province.middle {
+        fill: #7cebff;
+        fill-opacity: 0.45;
+        stroke: #c7ffdc;
+      }
+      .province.outer {
+        fill: #83ff7c;
+        fill-opacity: 0.45;
+        stroke: #ffffff;
+      }
+      .province.core:hover {
+        fill: #fbbf24;
+        fill-opacity: 0.85;
+        stroke: #f59e0b;
+        stroke-width: 2;
+        filter: drop-shadow(0 8px 12px rgba(251, 191, 36, 0.6));
+      }
+      .province.middle:hover {
+        fill: #4ade80;
+        fill-opacity: 0.75;
+        stroke: #22c55e;
+        stroke-width: 1.8;
+        filter: drop-shadow(0 6px 10px rgba(34, 197, 94, 0.55));
+      }
+      .province.outer:hover {
+        fill: #60a5fa;
+        fill-opacity: 0.7;
+        stroke: #3b82f6;
+        stroke-width: 1.6;
+        filter: drop-shadow(0 5px 8px rgba(59, 130, 246, 0.5));
+      }
+      .province.dimmed {
+        opacity: 0.15 !important;
+        pointer-events: none;
+      }
+      .province-label {
+        pointer-events: none;
+        text-anchor: middle;
+        fill: #ffffff;
+        font-weight: 700;
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+        letter-spacing: 0.05em;
+      }
+
+      /* 西方圣教 */
+      #western-view .county {
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+        stroke-width: 0.7;
+        vector-effect: non-scaling-stroke;
+        stroke-linejoin: round;
+      }
+      #western-view .county.prov1 {
+        fill: #ff891a;
+        fill-opacity: 0.6;
+        stroke: #a0784a;
+      }
+      #western-view .county.prov2 {
+        fill:  #ffaf5a;
+        fill-opacity: 0.6;
+        stroke: #b8860b;
+      }
+      #western-view .county.prov3 {
+        fill:  #90570c;
+        fill-opacity: 0.6;
+        stroke: #c49a5e;
+      }
+      #western-view .county.prov4 {
+        fill: #d77124;
+        fill-opacity: 0.6;
+        stroke: #9e7a50;
+      }
+      #western-view .county.prov5 {
+        fill:  #ffa010;
+        fill-opacity: 0.6;
+        stroke: #c4a060;
+      }
+      #western-view .county.prov6 {
+        fill: #4e8ee1;
+        fill-opacity: 0.6;
+        stroke: #5a7fa0;
+      }
+      #western-view .county.prov7 {
+        fill:  #81afff;
+        fill-opacity: 0.6;
+        stroke: #6a8fba;
+      }
+      #western-view .county.prov1:hover {
+        fill: #daa520;
+        fill-opacity: 0.85;
+        stroke: #ffd700;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(218, 165, 32, 0.6));
+      }
+      #western-view .county.prov2:hover {
+        fill: #e0b060;
+        fill-opacity: 0.85;
+        stroke: #ffd700;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(218, 165, 32, 0.6));
+      }
+      #western-view .county.prov3:hover {
+        fill: #e8c878;
+        fill-opacity: 0.85;
+        stroke: #ffd700;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(218, 165, 32, 0.6));
+      }
+      #western-view .county.prov4:hover {
+        fill: #d4a050;
+        fill-opacity: 0.85;
+        stroke: #ffd700;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(218, 165, 32, 0.6));
+      }
+      #western-view .county.prov5:hover {
+        fill: #f0d890;
+        fill-opacity: 0.85;
+        stroke: #ffd700;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(218, 165, 32, 0.6));
+      }
+      #western-view .county.prov6:hover {
+        fill: #7b9cc2;
+        fill-opacity: 0.85;
+        stroke: #5b8def;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(91, 141, 239, 0.6));
+      }
+      #western-view .county.prov7:hover {
+        fill: #8eaed8;
+        fill-opacity: 0.85;
+        stroke: #5b8def;
+        stroke-width: 2;
+        filter: drop-shadow(0 6px 12px rgba(91, 141, 239, 0.6));
+      }
+      #western-view .county.dimmed {
+        opacity: 0.15 !important;
+        pointer-events: none;
+      }
+      #western-view .county-label {
+        pointer-events: none;
+        text-anchor: middle;
+        fill: #ffffff;
+        font-weight: 600;
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+        letter-spacing: 0.03em;
+      }
+      #western-view .ws-province-label {
+        fill: #ffffff;
+        font-size: 15px;
+        font-weight: bold;
+        text-anchor: middle;
+        pointer-events: none;
+        text-shadow: 0 2px 6px #00000080;
+        letter-spacing: 0.1em;
+      }
+
+      /* 维格兰德部落（颜色完全由 CSS 控制） */
+      #vigland-view .tribe {
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+        stroke-width: 0.8;
+        vector-effect: non-scaling-stroke;
+        stroke-linejoin: round;
+      }
+      #vigland-view .tribe.core-region {
+        fill: #0077ff;
+        fill-opacity: 0.7;
+        stroke: #ffffff;
+      }
+      #vigland-view .tribe.inner-ring {
+        fill: #748fe9;
+        fill-opacity: 0.7;
+        stroke: #ffffff;
+      }
+      #vigland-view .tribe.outer-fringe {
+        fill: #7dffff;
+        fill-opacity: 0.7;
+        stroke: #ffffff;
+      }
+      #vigland-view .tribe.core-region:hover {
+        fill: #c0e0ff;
+        fill-opacity: 0.9;
+        stroke: #ffffff;
+        stroke-width: 2.5;
+        filter: drop-shadow(0 6px 12px rgba(200, 230, 255, 0.6));
+      }
+      #vigland-view .tribe.inner-ring:hover {
+        fill: #a0d8f8;
+        fill-opacity: 0.9;
+        stroke: #e0f0ff;
+        stroke-width: 2.5;
+        filter: drop-shadow(0 6px 12px rgba(180, 220, 255, 0.6));
+      }
+      #vigland-view .tribe.outer-fringe:hover {
+        fill: #80c8e8;
+        fill-opacity: 0.9;
+        stroke: #d0e8ff;
+        stroke-width: 2.5;
+        filter: drop-shadow(0 6px 12px rgba(160, 200, 240, 0.6));
+      }
+      #vigland-view .tribe.dimmed {
+        opacity: 0.15 !important;
+        pointer-events: none;
+      }
+      /* 克隆体也使用相同的颜色，无需在JS中设置 */
+      #vigland-view .clone-tribe.core-region {
+        fill: #b0d4f0;
+        fill-opacity: 0.9;
+        stroke: #ffffff;
+      }
+      #vigland-view .clone-tribe.inner-ring {
+        fill: #8ec8e8;
+        fill-opacity: 0.9;
+        stroke: #ffffff;
+      }
+      #vigland-view .clone-tribe.outer-fringe {
+        fill: #6ab8d8;
+        fill-opacity: 0.9;
+        stroke: #ffffff;
+      }
+      #vigland-view .tribe-label {
+        pointer-events: none;
+        text-anchor: middle;
+        fill: #e0f0ff;
+        font-weight: 700;
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+        letter-spacing: 0.05em;
+      }
+
+      .clone-province,
+      .clone-county,
+      .clone-tribe {
+        stroke-width: 1.5;
+        vector-effect: non-scaling-stroke;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.7));
+        animation: floatIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes floatIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .detail-text {
+        fill: #f8fafc;
+        font-size: 20px;
+        font-weight: bold;
+        text-anchor: middle;
+        pointer-events: none;
+        text-shadow: 0 2px 8px #00000080;
+      }
+      .detail-sub {
+        fill: #e2e8f0;
+        font-size: 14px;
+        text-anchor: middle;
+        pointer-events: none;
+        text-shadow: 0 1px 4px #00000060;
+      }
+      .map-title {
+        fill: #e2e8f0;
+        font-size: 26px;
+        font-weight: bold;
+        text-anchor: middle;
+        letter-spacing: 0.2em;
+      }
+      .zone-label {
+        fill: #cbd5e1;
+        font-size: 14px;
+        text-anchor: middle;
+      }
+      .legend-text {
+        fill: #e2e8f0;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="map-wrapper">
+      <button class="return-btn" id="return-btn" style="display: none">
+        ← 返回四方大陆
+      </button>
+      <div id="world-view"><svg id="world-map"></svg></div>
+      <div id="donghua-view"><svg id="donghua-map"></svg></div>
+      <div id="western-view"><svg id="western-map"></svg></div>
+      <div id="vigland-view"><svg id="vigland-map"></svg></div>
+    </div>
+
+    <script>
+      (function () {
+        const W = 900,
+          H = 900;
+
+        // ========== 世界地图 ==========
+        const worldSvg = d3
+          .select("#world-map")
+          .attr("viewBox", `0 0 ${W} ${H}`)
+          .attr("width", W)
+          .attr("height", H);
+        worldSvg
+          .append("rect")
+          .attr("width", W)
+          .attr("height", H)
+          .attr("fill", "#0f3460");
+        worldSvg
+          .append("text")
+          .attr("class", "title")
+          .attr("x", W / 2)
+          .attr("y", 38)
+          .text("四方大陆 · 四国疆域");
+
+        const easternPath =
+          d3.line().curve(d3.curveCatmullRomClosed)([
+            [900, 0],
+            [750, 0],
+            [680, 60],
+            [620, 120],
+            [580, 180],
+            [560, 250],
+            [550, 320],
+            [530, 380],
+            [500, 450],
+            [480, 520],
+            [470, 590],
+            [490, 660],
+            [530, 710],
+            [600, 760],
+            [680, 800],
+            [750, 850],
+            [820, 880],
+            [900, 900],
+            [900, 0],
+          ]) + " Z";
+        const northernPath =
+          d3.line().curve(d3.curveCatmullRomClosed)([
+            [0, 0],
+            [900, 0],
+            [750, 0],
+            [680, 60],
+            [620, 120],
+            [580, 180],
+            [530, 200],
+            [460, 180],
+            [380, 160],
+            [290, 150],
+            [200, 170],
+            [120, 210],
+            [60, 270],
+            [20, 340],
+            [0, 400],
+            [0, 0],
+          ]) + " Z";
+        const westernPath =
+          d3.line().curve(d3.curveCatmullRomClosed)([
+            [0, 400],
+            [20, 340],
+            [60, 270],
+            [120, 210],
+            [200, 170],
+            [290, 150],
+            [380, 160],
+            [460, 180],
+            [530, 200],
+            [560, 250],
+            [550, 320],
+            [530, 380],
+            [500, 450],
+            [480, 520],
+            [440, 550],
+            [380, 580],
+            [300, 600],
+            [220, 620],
+            [140, 660],
+            [70, 710],
+            [20, 770],
+            [0, 820],
+            [0, 400],
+          ]) + " Z";
+        const southernPath =
+          d3.line().curve(d3.curveCatmullRomClosed)([
+            [0, 820],
+            [20, 770],
+            [70, 710],
+            [140, 660],
+            [220, 620],
+            [300, 600],
+            [380, 580],
+            [440, 550],
+            [480, 520],
+            [470, 590],
+            [490, 660],
+            [530, 710],
+            [600, 760],
+            [680, 800],
+            [750, 850],
+            [820, 880],
+            [900, 900],
+            [0, 900],
+            [0, 820],
+          ]) + " Z";
+        const chaosPath =
+          d3.line().curve(d3.curveCatmullRomClosed)([
+            [480, 420],
+            [520, 400],
+            [540, 430],
+            [530, 480],
+            [510, 500],
+            [470, 490],
+            [440, 460],
+            [460, 430],
+          ]) + " Z";
+
+        const countries = [
+          {
+            name: "维格兰德",
+            sub: "极北·部落联盟",
+            path: northernPath,
+            color: "#b0c4de",
+            hover: "#87ceeb",
+            clickable: true,
+          },
+          {
+            name: "东华皇朝",
+            sub: "东方·悟道之途",
+            path: easternPath,
+            color: "#f5d6a8",
+            hover: "#ffd700",
+            clickable: true,
+          },
+          {
+            name: "西方圣教",
+            sub: "西方·信仰之道",
+            path: westernPath,
+            color: "#d4a574",
+            hover: "#daa520",
+            clickable: true,
+          },
+          {
+            name: "梅里迪亚",
+            sub: "南方·万律之道",
+            path: southernPath,
+            color: "#a8d8a8",
+            hover: "#7ecf7e",
+          },
+        ];
+
+        const worldGroup = worldSvg.append("g");
+        countries.forEach((c) => {
+          worldGroup
+            .append("path")
+            .attr("d", c.path)
+            .attr("class", "country")
+            .attr("fill", c.color)
+            .attr("data-name", c.name)
+            .on("mouseenter", function () {
+              d3.select(this).attr("fill", c.hover);
+            })
+            .on("mouseleave", function () {
+              if (!d3.select(this).classed("dimmed"))
+                d3.select(this).attr("fill", c.color);
+            })
+            .on("click", function () {
+              if (c.name === "东华皇朝") showDonghuaView();
+              else if (c.name === "西方圣教") showWesternView();
+              else if (c.name === "维格兰德") showViglandView();
+            });
+        });
+
+        worldGroup
+          .append("path")
+          .attr("d", chaosPath)
+          .attr("fill", "#3a3a5c")
+          .attr("stroke", "#6a5acd")
+          .attr("stroke-width", 2)
+          .attr("stroke-dasharray", "6,4")
+          .attr("class", "country")
+          .append("title")
+          .text("紊乱海洋");
+
+        const worldLabels = [
+          { n: "维格兰德", s: "极北·部落联盟", x: 300, y: 110 },
+          { n: "东华皇朝", s: "东方·悟道之途", x: 680, y: 420 },
+          { n: "西方圣教", s: "西方·信仰之道", x: 150, y: 500 },
+          { n: "梅里迪亚", s: "南方·万律之道", x: 400, y: 760 },
+          { n: "紊乱海洋", s: "规则紊乱", x: 490, y: 455 },
+        ];
+        worldLabels.forEach((l) => {
+          worldSvg
+            .append("text")
+            .attr("x", l.x)
+            .attr("y", l.y)
+            .attr("class", "country-label")
+            .style("font-size", l.n === "紊乱海洋" ? "11px" : "20px")
+            .text(l.n);
+          worldSvg
+            .append("text")
+            .attr("x", l.x)
+            .attr("y", l.y + (l.n === "紊乱海洋" ? 16 : 26))
+            .attr("class", "detail-label")
+            .style("font-size", l.n === "紊乱海洋" ? "9px" : "13px")
+            .text(l.s);
+        });
+
+        // ========== 通用函数 ==========
+        function mulberry32(a) {
+          return function () {
+            a |= 0;
+            a = (a + 0x6d2b79f5) | 0;
+            var t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        // ========== 东华皇朝 ==========
+        const tW = 800,
+          tH = 1000,
+          pad = 40;
+        const regionSvg = d3
+          .select("#donghua-map")
+          .attr("viewBox", `0 0 ${tW} ${tH}`)
+          .attr("width", tW)
+          .attr("height", tH);
+        const outerPointsRaw = [
+          [500, 50],
+          [550, 60],
+          [620, 80],
+          [680, 110],
+          [720, 160],
+          [750, 220],
+          [760, 300],
+          [740, 380],
+          [710, 450],
+          [670, 520],
+          [630, 580],
+          [580, 630],
+          [520, 670],
+          [460, 690],
+          [400, 680],
+          [340, 650],
+          [290, 600],
+          [250, 530],
+          [230, 450],
+          [240, 360],
+          [270, 280],
+          [310, 200],
+          [370, 140],
+          [440, 90],
+        ];
+        const xs = outerPointsRaw.map((p) => p[0]),
+          ys = outerPointsRaw.map((p) => p[1]);
+        const minX = Math.min(...xs),
+          maxX = Math.max(...xs),
+          minY = Math.min(...ys),
+          maxY = Math.max(...ys);
+        const sc = Math.min(
+          (tW - pad * 2) / (maxX - minX),
+          (tH - pad * 2) / (maxY - minY),
+        );
+        const tx = (p) => [pad + (p[0] - minX) * sc, pad + (p[1] - minY) * sc];
+        const centerRaw = [(minX + maxX) / 2, (minY + maxY) / 2];
+        function scalePts(pts, s) {
+          return pts.map((p) =>
+            tx([
+              centerRaw[0] + (p[0] - centerRaw[0]) * s,
+              centerRaw[1] + (p[1] - centerRaw[1]) * s,
+            ]),
+          );
+        }
+        const corePathForPoints =
+          d3.line().curve(d3.curveCatmullRomClosed)(
+            scalePts(outerPointsRaw, 0.38),
+          ) + " Z";
+        const middlePathForPoints =
+          d3.line().curve(d3.curveCatmullRomClosed)(
+            scalePts(outerPointsRaw, 0.68),
+          ) + " Z";
+        const rand = mulberry32(42);
+
+        function pointInPath(px, py, d) {
+          if (!pointInPath.canvas) {
+            pointInPath.canvas = document.createElement("canvas");
+            pointInPath.canvas.width = tW;
+            pointInPath.canvas.height = tH;
+          }
+          const ctx = pointInPath.canvas.getContext("2d");
+          ctx.clearRect(0, 0, tW, tH);
+          return ctx.isPointInPath(new Path2D(d), px, py);
+        }
+        function generatePoints(count, region, inner = null) {
+          const pts = [];
+          let t = 0;
+          while (pts.length < count && t < count * 300) {
+            const x = pad + rand() * (tW - 2 * pad),
+              y = pad + rand() * (tH - 2 * pad);
+            if (
+              pointInPath(x, y, region) &&
+              (!inner || !pointInPath(x, y, inner))
+            )
+              pts.push([x, y]);
+            t++;
+          }
+          while (pts.length < count) {
+            const x = pad + rand() * (tW - 2 * pad),
+              y = pad + rand() * (tH - 2 * pad);
+            if (
+              pointInPath(x, y, region) &&
+              (!inner || !pointInPath(x, y, inner))
+            )
+              pts.push([x, y]);
+          }
+          return pts;
+        }
+
+        const coreSeeds = generatePoints(13, corePathForPoints);
+        const middleSeeds = generatePoints(
+          36,
+          middlePathForPoints,
+          corePathForPoints,
+        );
+        const outerSeeds = generatePoints(
+          72,
+          d3.line().curve(d3.curveCatmullRomClosed)(outerPointsRaw.map(tx)) +
+            " Z",
+          middlePathForPoints,
+        );
+        const allSeeds = [...coreSeeds, ...middleSeeds, ...outerSeeds];
+        const delaunay = d3.Delaunay.from(allSeeds);
+        const voronoi = delaunay.voronoi([0, 0, tW, tH]);
+        const polys = [];
+        for (let i = 0; i < allSeeds.length; i++) {
+          const cell = voronoi.cellPolygon(i);
+          if (cell && cell.length >= 3)
+            polys.push({
+              idx: i,
+              verts: cell.map((p) => [p[0], p[1]]),
+              zone: i < 13 ? "core" : i < 49 ? "middle" : "outer",
+              center: allSeeds[i],
+            });
+        }
+
+        const historyNames = [
+          "幽州",
+          "冀州",
+          "党州",
+          "徐州",
+          "扬州",
+          "荆州",
+          "豫州",
+          "梁州",
+          "雍州",
+          "兖州",
+          "并州",
+          "交州",
+          "益州",
+          "凉州",
+          "朔州",
+          "代州",
+          "云州",
+          "岚州",
+          "蔚州",
+          "晋州",
+          "蒲州",
+          "绛州",
+          "慈州",
+          "隰州",
+          "汾州",
+          "忻州",
+          "潞州",
+          "泽州",
+          "辽州",
+          "沁州",
+          "盂州",
+          "怀州",
+          "卫州",
+          "郑州",
+          "汴州",
+          "宋州",
+          "亳州",
+          "泗州",
+          "濠州",
+          "寿州",
+          "颍州",
+          "陈州",
+          "蔡州",
+          "许州",
+          "汝州",
+          "邓州",
+          "唐州",
+          "随州",
+          "郢州",
+          "复州",
+          "襄州",
+          "均州",
+          "房州",
+          "巴州",
+          "阆州",
+          "利州",
+          "剑州",
+          "绵州",
+          "汉州",
+          "蜀州",
+          "邛州",
+          "雅州",
+          "眉州",
+          "嘉州",
+          "戎州",
+          "泸州",
+          "渝州",
+          "涪州",
+          "万州",
+          "忠州",
+          "开州",
+          "达州",
+          "夔州",
+          "归州",
+          "峡州",
+          "武昌",
+          "鄂州",
+          "岳州",
+          "潭州",
+          "衡州",
+          "永州",
+          "道州",
+          "郴州",
+          "邵州",
+          "全州",
+          "桂州",
+          "昭州",
+          "贺州",
+          "梧州",
+          "藤州",
+          "龚州",
+          "象州",
+          "柳州",
+          "宜州",
+          "宾州",
+          "横州",
+          "邕州",
+          "钦州",
+          "廉州",
+          "贵州",
+          "容州",
+          "牢州",
+          "白州",
+          "顺州",
+          "绣州",
+          "郁林",
+          "窦州",
+          "禺州",
+          "党州",
+          "江陵",
+          "荆门",
+          "余州",
+          "安州",
+          "昌州",
+          "河州",
+          "湖州",
+          "青州",
+          "静州",
+          "兴州",
+          "丰州",
+          "宁州",
+          "原州",
+          "会州",
+          "文州",
+          "惠州",
+        ];
+        const polyNames = new Array(polys.length).fill("");
+        const coreIndices = [];
+        polys.forEach((p, i) => {
+          if (p.zone === "core") coreIndices.push(i);
+        });
+        let topIdx = coreIndices[0];
+        coreIndices.forEach((i) => {
+          if (polys[i].center[1] < polys[topIdx].center[1]) topIdx = i;
+        });
+        let rightIdx = coreIndices[0];
+        coreIndices.forEach((i) => {
+          if (
+            polys[i].center[0] + polys[i].center[1] >
+            polys[rightIdx].center[0] + polys[rightIdx].center[1]
+          )
+            rightIdx = i;
+        });
+        let leftIdx = coreIndices[0];
+        coreIndices.forEach((i) => {
+          if (
+            -polys[i].center[0] + polys[i].center[1] >
+            -polys[leftIdx].center[0] + polys[leftIdx].center[1]
+          )
+            leftIdx = i;
+        });
+        polyNames[topIdx] = "瑶台京";
+        polyNames[rightIdx] = "重晖京";
+        polyNames[leftIdx] = "群玉京";
+        let nIdx = 0;
+        for (let i = 0; i < polys.length; i++) {
+          if (polyNames[i] === "") {
+            polyNames[i] = historyNames[nIdx];
+            nIdx++;
+          }
+        }
+
+        const detailsMap = {
+          瑶台京:
+            "帝都·政治中枢。城中有城，宫中有宫。镇衙卫总部、皇家书院、六部衙门、天字库均在此。皇城大阵由三位登途共同维持。面积约50万平方公里，人口约5000万。",
+          群玉京:
+            "经济重镇·天下商汇。六环结构，锦绣坊日夜赶工，玉清观香火鼎盛。皇城大阵由两位登途共同维持。面积约30万平方公里，人口约6500万。",
+          重晖京:
+            "军事要塞·北御外敌。五环结构，军器监昼夜锻造，烽火台连绵百里。稷下学宫总部所在地。面积约72万平方公里，人口约4800万。",
+          青州: "边缘区青州。长明之灯塔发现地，该地区人口寿短但一生传奇。林小天苏醒于常青山。",
+          凉州: "外围区凉州。马良笔发现地。",
+          幽州: "北方边陲，气候寒冷。民风彪悍，盛产良马与铁矿。",
+        };
+
+        regionSvg
+          .append("text")
+          .attr("class", "map-title")
+          .attr("x", tW / 2)
+          .attr("y", pad - 15)
+          .text("东华皇朝 · 州府");
+        const coreCenterPt = tx(centerRaw);
+        regionSvg
+          .append("text")
+          .attr("class", "zone-label")
+          .attr("x", coreCenterPt[0])
+          .attr("y", coreCenterPt[1] + 10)
+          .text("核心区（13州府）");
+        regionSvg
+          .append("text")
+          .attr("class", "zone-label")
+          .attr("x", coreCenterPt[0])
+          .attr("y", coreCenterPt[1] - 200)
+          .text("外围区（36州府）");
+        regionSvg
+          .append("text")
+          .attr("class", "zone-label")
+          .attr("x", coreCenterPt[0])
+          .attr("y", coreCenterPt[1] - 260)
+          .text("边缘区（72州府）");
+        const leg = regionSvg
+          .append("g")
+          .attr("transform", `translate(${tW - pad - 80},${tH - pad - 20})`);
+        leg
+          .append("rect")
+          .attr("width", 12)
+          .attr("height", 12)
+          .attr("fill", "#ffd500")
+          .attr("stroke", "#fbbf24");
+        leg
+          .append("text")
+          .attr("x", 20)
+          .attr("y", 11)
+          .attr("fill", "#e2e8f0")
+          .attr("font-size", "11")
+          .text("核心区");
+        leg
+          .append("rect")
+          .attr("width", 12)
+          .attr("height", 12)
+          .attr("y", 22)
+          .attr("fill", "#0044FF")
+          .attr("stroke", "#4ade80");
+        leg
+          .append("text")
+          .attr("x", 20)
+          .attr("y", 33)
+          .attr("fill", "#e2e8f0")
+          .attr("font-size", "11")
+          .text("外围区");
+        leg
+          .append("rect")
+          .attr("width", 12)
+          .attr("height", 12)
+          .attr("y", 44)
+          .attr("fill", "#83ff7c")
+          .attr("stroke", "#60a5fa");
+        leg
+          .append("text")
+          .attr("x", 20)
+          .attr("y", 55)
+          .attr("fill", "#e2e8f0")
+          .attr("font-size", "11")
+          .text("边缘区");
+        const bgRect = regionSvg
+          .append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", tW)
+          .attr("height", tH)
+          .attr("fill", "transparent")
+          .style("pointer-events", "all");
+
+        const provincesG = regionSvg.append("g");
+        const labelsG = regionSvg.append("g");
+        polys.forEach((poly, i) => {
+          const d =
+            poly.verts
+              .map(
+                (v, j) =>
+                  (j === 0 ? "M" : "L") +
+                  ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
+              )
+              .join(" ") + " Z";
+          const path = provincesG
+            .append("path")
+            .attr("d", d)
+            .attr("class", `province ${poly.zone}`)
+            .datum(i);
+          path.append("title").text(polyNames[i]);
+          const centroid = d3.polygonCentroid(poly.verts);
+          const fontSize =
+            poly.zone === "core"
+              ? "12px"
+              : poly.zone === "middle"
+                ? "10px"
+                : "10px";
+          labelsG
+            .append("text")
+            .attr("x", centroid[0])
+            .attr("y", centroid[1])
+            .attr("class", "province-label")
+            .attr("dy", "0.35em")
+            .style("font-size", fontSize)
+            .text(polyNames[i]);
+        });
+        const cloneLayer = regionSvg.append("g");
+        const detailLayer = regionSvg.append("g");
+        let selectedIdx = null;
+        function showDetail(idx) {
+          const poly = polys[idx];
+          const name = polyNames[idx];
+          const cx = poly.center[0],
+            cy = poly.center[1];
+          const sf = 2.5;
+          const cloneD =
+            poly.verts
+              .map(
+                (v, j) =>
+                  (j === 0 ? "M" : "L") +
+                  ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
+              )
+              .join(" ") + " Z";
+          const fillColor =
+            poly.zone === "core"
+              ? "#ffd500"
+              : poly.zone === "middle"
+                ? "#83ff7c"
+                : "#80b0fd";
+          cloneLayer
+            .append("path")
+            .attr("d", cloneD)
+            .attr("class", `clone-province ${poly.zone}`)
+            .attr("fill", fillColor)
+            .attr("fill-opacity", "0.9")
+            .attr("stroke", "#fff")
+            .attr(
+              "transform",
+              `translate(${tW / 2 - cx * sf},${tH / 2 - cy * sf}) scale(${sf})`,
+            );
+          const desc = detailsMap[name] || "（信息暂缺）";
+          const lines = desc.split("。").filter((l) => l.trim() !== "");
+          const bgH = 50 + lines.length * 22;
+          const dY = tH / 2 + 145;
+          const dG = detailLayer
+            .append("g")
+            .attr("transform", `translate(${tW / 2},${dY})`);
+          dG.append("rect")
+            .attr("x", -220)
+            .attr("y", -30)
+            .attr("width", 440)
+            .attr("height", bgH)
+            .attr("fill", "#0b0f19")
+            .attr("opacity", 0.7)
+            .attr("rx", 8);
+          dG.append("text")
+            .attr("class", "detail-text")
+            .attr("y", -5)
+            .text(name);
+          lines.forEach((l, j) => {
+            dG.append("text")
+              .attr("class", "detail-sub")
+              .attr("y", 20 + j * 22)
+              .text(l.trim());
+          });
+        }
+        function clearDetail() {
+          cloneLayer.selectAll("*").remove();
+          detailLayer.selectAll("*").remove();
+          selectedIdx = null;
+        }
+        provincesG.selectAll(".province").on("click", function (event, i) {
+          event.stopPropagation();
+          const self = d3.select(this);
+          if (selectedIdx === i) {
+            clearDetail();
+            provincesG.selectAll(".province").classed("dimmed", false);
+            return;
+          }
+          clearDetail();
+          provincesG.selectAll(".province").classed("dimmed", false);
+          self.style("opacity", "0");
+          provincesG.selectAll(".province").each(function () {
+            if (this !== self.node()) d3.select(this).classed("dimmed", true);
+          });
+          selectedIdx = i;
+          showDetail(i);
+        });
+        bgRect.on("click", () => {
+          clearDetail();
+          provincesG
+            .selectAll(".province")
+            .classed("dimmed", false)
+            .style("opacity", null);
+        });
+
+        // ========== 西方圣教 ==========
+        function initWesternMap() {
+          const wW = 900,
+            wH = 1000,
+            wPad = 50;
+          const wSvg = d3
+            .select("#western-map")
+            .attr("viewBox", `0 0 ${wW} ${wH}`)
+            .attr("width", wW)
+            .attr("height", wH);
+          const wOuter = [
+            [200, 80],
+            [280, 55],
+            [370, 45],
+            [460, 50],
+            [540, 70],
+            [610, 105],
+            [660, 155],
+            [685, 220],
+            [680, 295],
+            [650, 365],
+            [600, 425],
+            [535, 475],
+            [460, 510],
+            [375, 530],
+            [290, 525],
+            [215, 495],
+            [155, 445],
+            [115, 380],
+            [95, 305],
+            [100, 230],
+            [125, 160],
+            [165, 105],
+          ];
+          const wXs = wOuter.map((p) => p[0]),
+            wYs = wOuter.map((p) => p[1]);
+          const wMinX = Math.min(...wXs),
+            wMaxX = Math.max(...wXs),
+            wMinY = Math.min(...wYs),
+            wMaxY = Math.max(...wYs);
+          const wSc = Math.min(
+            (wW - wPad * 2) / (wMaxX - wMinX),
+            (wH - wPad * 2) / (wMaxY - wMinY),
+          );
+          const wTx = (p) => [
+            wPad + (p[0] - wMinX) * wSc,
+            wPad + (p[1] - wMinY) * wSc,
+          ];
+          wSvg
+            .append("text")
+            .attr("class", "map-title")
+            .attr("x", wW / 2)
+            .attr("y", wPad - 15)
+            .text("西方圣教 · 七大行省");
+          const wLeg = wSvg
+            .append("g")
+            .attr(
+              "transform",
+              `translate(${wW - wPad - 130},${wH - wPad - 40})`,
+            );
+          wLeg
+            .append("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("class", "legend-text")
+            .style("font-weight", "bold")
+            .text("■ 圣教五省（暖棕黄系）");
+          wLeg
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 14)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#c4956a");
+          wLeg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 26)
+            .attr("class", "legend-text")
+            .text("旧都省");
+          wLeg
+            .append("rect")
+            .attr("x", 70)
+            .attr("y", 14)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#d4a574");
+          wLeg
+            .append("text")
+            .attr("x", 90)
+            .attr("y", 26)
+            .attr("class", "legend-text")
+            .text("行省二");
+          wLeg
+            .append("rect")
+            .attr("x", 155)
+            .attr("y", 14)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#d9b382");
+          wLeg
+            .append("text")
+            .attr("x", 175)
+            .attr("y", 26)
+            .attr("class", "legend-text")
+            .text("行省三");
+          wLeg
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 38)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#bf8f6a");
+          wLeg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 50)
+            .attr("class", "legend-text")
+            .text("行省四");
+          wLeg
+            .append("rect")
+            .attr("x", 70)
+            .attr("y", 38)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#e0c090");
+          wLeg
+            .append("text")
+            .attr("x", 90)
+            .attr("y", 50)
+            .attr("class", "legend-text")
+            .text("行省五");
+          wLeg
+            .append("text")
+            .attr("x", 0)
+            .attr("y", 72)
+            .attr("class", "legend-text")
+            .style("font-weight", "bold")
+            .text("■ 新圣教两省（冷蓝紫系）");
+          wLeg
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 86)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#8fa8c8");
+          wLeg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 98)
+            .attr("class", "legend-text")
+            .text("行省六（工商业）");
+          wLeg
+            .append("rect")
+            .attr("x", 145)
+            .attr("y", 86)
+            .attr("width", 14)
+            .attr("height", 14)
+            .attr("fill", "#a0b5d8");
+          wLeg
+            .append("text")
+            .attr("x", 165)
+            .attr("y", 98)
+            .attr("class", "legend-text")
+            .text("行省七（港口）");
+          const wBgRect = wSvg
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", wW)
+            .attr("height", wH)
+            .attr("fill", "transparent")
+            .style("pointer-events", "all");
+          const wRand = mulberry32(271);
+          function wPIP(px, py, d) {
+            if (!wPIP.c) {
+              wPIP.c = document.createElement("canvas");
+              wPIP.c.width = wW;
+              wPIP.c.height = wH;
+            }
+            const ctx = wPIP.c.getContext("2d");
+            ctx.clearRect(0, 0, wW, wH);
+            return ctx.isPointInPath(new Path2D(d), px, py);
+          }
+          function wGen(count, rd, id = null) {
+            const pts = [];
+            let t = 0;
+            while (pts.length < count && t < count * 400) {
+              const x = wPad + wRand() * (wW - 2 * wPad),
+                y = wPad + wRand() * (wH - 2 * wPad);
+              if (wPIP(x, y, rd) && (!id || !wPIP(x, y, id))) pts.push([x, y]);
+              t++;
+            }
+            while (pts.length < count) {
+              const x = wPad + wRand() * (wW - 2 * wPad),
+                y = wPad + wRand() * (wH - 2 * wPad);
+              if (wPIP(x, y, rd) && (!id || !wPIP(x, y, id))) pts.push([x, y]);
+            }
+            return pts;
+          }
+          const wProvPaths = [
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([200, 200]),
+              wTx([300, 180]),
+              wTx([400, 200]),
+              wTx([420, 300]),
+              wTx([380, 400]),
+              wTx([280, 420]),
+              wTx([180, 380]),
+              wTx([160, 300]),
+            ]) + " Z",
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([300, 180]),
+              wTx([450, 160]),
+              wTx([550, 180]),
+              wTx([580, 260]),
+              wTx([520, 320]),
+              wTx([420, 300]),
+              wTx([400, 200]),
+            ]) + " Z",
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([550, 180]),
+              wTx([650, 200]),
+              wTx([680, 300]),
+              wTx([650, 400]),
+              wTx([580, 320]),
+              wTx([520, 320]),
+            ]) + " Z",
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([160, 160]),
+              wTx([280, 140]),
+              wTx([380, 150]),
+              wTx([300, 180]),
+              wTx([200, 200]),
+              wTx([160, 300]),
+              wTx([120, 220]),
+            ]) + " Z",
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([160, 300]),
+              wTx([180, 380]),
+              wTx([280, 420]),
+              wTx([380, 400]),
+              wTx([420, 480]),
+              wTx([300, 520]),
+              wTx([180, 500]),
+              wTx([120, 400]),
+            ]) + " Z",
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([420, 300]),
+              wTx([520, 320]),
+              wTx([580, 320]),
+              wTx([650, 400]),
+              wTx([630, 500]),
+              wTx([550, 550]),
+              wTx([450, 530]),
+              wTx([380, 400]),
+            ]) + " Z",
+            d3.line().curve(d3.curveCatmullRomClosed)([
+              wTx([380, 400]),
+              wTx([450, 530]),
+              wTx([550, 550]),
+              wTx([600, 620]),
+              wTx([520, 680]),
+              wTx([420, 650]),
+              wTx([300, 600]),
+              wTx([250, 500]),
+              wTx([300, 520]),
+              wTx([420, 480]),
+            ]) + " Z",
+          ];
+          const wProvs = [
+            {
+              id: 1,
+              n: "行省一·旧都省",
+              o: "shengjiao",
+              path: wProvPaths[0],
+              cnt: 7,
+              fc: "#c4956a",
+              desc: "圣教千年旧都，宗教中心。",
+            },
+            {
+              id: 2,
+              n: "行省二",
+              o: "shengjiao",
+              path: wProvPaths[1],
+              cnt: 8,
+              fc: "#d4a574",
+              desc: "传统农业区。",
+            },
+            {
+              id: 3,
+              n: "行省三",
+              o: "shengjiao",
+              path: wProvPaths[2],
+              cnt: 6,
+              fc: "#d9b382",
+              desc: "军事要地。",
+            },
+            {
+              id: 4,
+              n: "行省四",
+              o: "shengjiao",
+              path: wProvPaths[3],
+              cnt: 8,
+              fc: "#bf8f6a",
+              desc: "矿业资源区。",
+            },
+            {
+              id: 5,
+              n: "行省五",
+              o: "shengjiao",
+              path: wProvPaths[4],
+              cnt: 7,
+              fc: "#e0c090",
+              desc: "文化中心。",
+            },
+            {
+              id: 6,
+              n: "行省六",
+              o: "xinshengjiao",
+              path: wProvPaths[5],
+              cnt: 8,
+              fc: "#8fa8c8",
+              desc: "工商业中心。",
+            },
+            {
+              id: 7,
+              n: "行省七",
+              o: "xinshengjiao",
+              path: wProvPaths[6],
+              cnt: 8,
+              fc: "#a0b5d8",
+              desc: "港口贸易枢纽。",
+            },
+          ];
+          const wCN = [
+            "圣城",
+            "圣光",
+            "圣十字",
+            "圣墓",
+            "圣盾",
+            "圣徽",
+            "圣恩",
+            "圣咏",
+            "琅西",
+            "米迦勒",
+            "加百列",
+            "拉斐尔",
+            "乌列",
+            "圣剑",
+            "圣杯",
+            "圣杖",
+            "圣约",
+            "圣血",
+            "圣火",
+            "圣泉",
+            "圣林",
+            "圣山",
+            "圣谷",
+            "圣湖",
+            "圣风",
+            "圣云",
+            "圣星",
+            "圣月",
+            "圣霜",
+            "圣露",
+            "西境",
+            "灰石",
+            "铁冠",
+            "银叶",
+            "金穗",
+            "铜钟",
+            "白墙",
+            "黑松",
+            "红崖",
+            "蓝河",
+            "绿丘",
+            "紫杉",
+            "黄沙",
+            "青池",
+            "碧波",
+            "苍岭",
+            "翠谷",
+            "丹霞",
+            "瀚海",
+            "霜原",
+            "雾沼",
+            "裂谷",
+            "孤峰",
+            "双塔",
+            "三河",
+            "四风",
+            "五谷",
+            "六角",
+            "七星",
+            "八荒",
+            "九曲",
+            "十方",
+            "百灵",
+            "千帆",
+            "万松",
+            "磐石",
+            "流沙",
+            "冰脊",
+            "炎谷",
+            "雷崖",
+            "云顶",
+            "月湾",
+            "日升",
+            "夕照",
+            "星落",
+            "晨曦",
+            "旧都",
+            "教廷",
+            "钟楼",
+            "圣堂",
+            "神学院",
+            "苦修",
+            "朝圣",
+          ];
+          const wAC = [];
+          let wCID = 0;
+          const wUN = new Set();
+          function wGUN() {
+            while (wCID < wCN.length) {
+              const n = wCN[wCID];
+              wCID++;
+              if (!wUN.has(n)) {
+                wUN.add(n);
+                return n + "郡";
+              }
+            }
+            return "郡" + wCID++;
+          }
+          wProvs.forEach((p) => {
+            const seeds = wGen(p.cnt, p.path);
+            seeds.forEach((s) => {
+              wAC.push({
+                idx: wAC.length,
+                seed: s,
+                pid: p.id,
+                fc: p.fc,
+                name: wGUN(),
+                pn: p.n,
+                pd: p.desc,
+              });
+            });
+          });
+          const wAS = wAC.map((c) => c.seed);
+          const wD = d3.Delaunay.from(wAS);
+          const wV = wD.voronoi([0, 0, wW, wH]);
+          for (let i = 0; i < wAC.length; i++) {
+            const c = wV.cellPolygon(i);
+            if (c && c.length >= 3) {
+              wAC[i].verts = c.map((p) => [p[0], p[1]]);
+              wAC[i].center = wAS[i];
+            }
+          }
+          const wCG = wSvg.append("g");
+          const wLG = wSvg.append("g");
+          wAC.forEach((c, i) => {
+            if (!c.verts) return;
+            const d =
+              c.verts
+                .map(
+                  (v, j) =>
+                    (j === 0 ? "M" : "L") +
+                    ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
+                )
+                .join(" ") + " Z";
+            const p = wCG
+              .append("path")
+              .attr("d", d)
+              .attr("class", `county prov${c.pid}`)
+              .datum(i);
+            p.append("title").text(`${c.name} · ${c.pn}`);
+            const ct = d3.polygonCentroid(c.verts);
+            wLG
+              .append("text")
+              .attr("x", ct[0])
+              .attr("y", ct[1])
+              .attr("class", "county-label")
+              .attr("dy", "0.35em")
+              .style("font-size", "9px")
+              .text(c.name);
+          });
+          const wPL = [
+            {
+              n: "行省一·旧都省",
+              x: wTx([260, 300])[0],
+              y: wTx([260, 300])[1],
+            },
+            { n: "行省二", x: wTx([480, 250])[0], y: wTx([480, 250])[1] },
+            { n: "行省三", x: wTx([620, 300])[0], y: wTx([620, 300])[1] },
+            { n: "行省四", x: wTx([220, 180])[0], y: wTx([220, 180])[1] },
+            { n: "行省五", x: wTx([260, 450])[0], y: wTx([260, 450])[1] },
+            {
+              n: "行省六·新圣教",
+              x: wTx([520, 420])[0],
+              y: wTx([520, 420])[1],
+            },
+            {
+              n: "行省七·新圣教",
+              x: wTx([480, 580])[0],
+              y: wTx([480, 580])[1],
+            },
+          ];
+          wPL.forEach((l) => {
+            wSvg
+              .append("text")
+              .attr("x", l.x)
+              .attr("y", l.y)
+              .attr("class", "ws-province-label")
+              .text(l.n);
+          });
+          const wCL = wSvg.append("g");
+          const wDL = wSvg.append("g");
+          let wSI = null;
+          function wSD(idx) {
+            const c = wAC[idx];
+            if (!c.verts) return;
+            const cx = c.center[0],
+              cy = c.center[1];
+            const sf = 2.8;
+            const clD =
+              c.verts
+                .map(
+                  (v, j) =>
+                    (j === 0 ? "M" : "L") +
+                    ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
+                )
+                .join(" ") + " Z";
+            wCL
+              .append("path")
+              .attr("d", clD)
+              .attr("class", `clone-county prov${c.pid}`)
+              .attr("fill", c.fc)
+              .attr("fill-opacity", "0.9")
+              .attr("stroke", "#fff")
+              .attr(
+                "transform",
+                `translate(${wW / 2 - cx * sf},${wH / 2 - cy * sf}) scale(${sf})`,
+              );
+            const dY = wH / 2 + 155;
+            const dG = wDL
+              .append("g")
+              .attr("transform", `translate(${wW / 2},${dY})`);
+            dG.append("rect")
+              .attr("x", -240)
+              .attr("y", -40)
+              .attr("width", 480)
+              .attr("height", 90)
+              .attr("fill", "#1a1a2e")
+              .attr("opacity", 0.8)
+              .attr("rx", 8);
+            dG.append("text")
+              .attr("class", "detail-text")
+              .attr("y", -15)
+              .text(c.name);
+            dG.append("text")
+              .attr("class", "detail-sub")
+              .attr("y", 15)
+              .text(`归属：${c.pn}`);
+            dG.append("text")
+              .attr("class", "detail-sub")
+              .attr("y", 38)
+              .text(c.pd);
+          }
+          function wCD() {
+            wCL.selectAll("*").remove();
+            wDL.selectAll("*").remove();
+            wSI = null;
+          }
+          wCG.selectAll(".county").on("click", function (e, i) {
+            e.stopPropagation();
+            const s = d3.select(this);
+            if (wSI === i) {
+              wCD();
+              wCG.selectAll(".county").classed("dimmed", false);
+              return;
+            }
+            wCD();
+            wCG.selectAll(".county").classed("dimmed", false);
+            s.style("opacity", "0");
+            wCG.selectAll(".county").each(function () {
+              if (this !== s.node()) d3.select(this).classed("dimmed", true);
+            });
+            wSI = i;
+            wSD(i);
+          });
+          wBgRect.on("click", () => {
+            wCD();
+            wCG
+              .selectAll(".county")
+              .classed("dimmed", false)
+              .style("opacity", null);
+          });
+        }
+        initWesternMap();
+
+        // ========== 维格兰德（CSS控制颜色） ==========
+        function initViglandMap() {
+          const vW = 900,
+            vH = 1000,
+            vPad = 50;
+          const vSvg = d3
+            .select("#vigland-map")
+            .attr("viewBox", `0 0 ${vW} ${vH}`)
+            .attr("width", vW)
+            .attr("height", vH);
+          const vOuter = [
+            [250, 70],
+            [330, 50],
+            [420, 45],
+            [510, 55],
+            [590, 75],
+            [660, 110],
+            [710, 160],
+            [740, 230],
+            [740, 310],
+            [710, 390],
+            [660, 460],
+            [590, 520],
+            [510, 560],
+            [420, 580],
+            [330, 570],
+            [250, 540],
+            [185, 490],
+            [140, 420],
+            [115, 340],
+            [120, 255],
+            [150, 175],
+            [200, 110],
+          ];
+          const vXs = vOuter.map((p) => p[0]),
+            vYs = vOuter.map((p) => p[1]);
+          const vMinX = Math.min(...vXs),
+            vMaxX = Math.max(...vXs),
+            vMinY = Math.min(...vYs),
+            vMaxY = Math.max(...vYs);
+          const vSc = Math.min(
+            (vW - vPad * 2) / (vMaxX - vMinX),
+            (vH - vPad * 2) / (vMaxY - vMinY),
+          );
+          const vTx = (p) => [
+            vPad + (p[0] - vMinX) * vSc,
+            vPad + (p[1] - vMinY) * vSc,
+          ];
+
+          vSvg
+            .append("text")
+            .attr("class", "map-title")
+            .attr("x", vW / 2)
+            .attr("y", vPad - 15)
+            .text("维格兰德 · 部落联盟");
+          const vCR = [(vMinX + vMaxX) / 2, (vMinY + vMaxY) / 2];
+          function vSP(pts, s) {
+            return pts.map((p) =>
+              vTx([vCR[0] + (p[0] - vCR[0]) * s, vCR[1] + (p[1] - vCR[1]) * s]),
+            );
+          }
+          const vCoreP = vSP(vOuter, 0.3),
+            vInnerP = vSP(vOuter, 0.6);
+          const vCoreCP =
+              d3.line().curve(d3.curveCatmullRomClosed)(vCoreP) + " Z",
+            vInnerCP =
+              d3.line().curve(d3.curveCatmullRomClosed)(vInnerP) + " Z";
+          vSvg
+            .append("text")
+            .attr("class", "zone-label")
+            .attr("x", vTx(vCR)[0])
+            .attr("y", vTx(vCR)[1] + 5)
+            .text("核心区（5部落）");
+          vSvg
+            .append("text")
+            .attr("class", "zone-label")
+            .attr("x", vTx(vCR)[0])
+            .attr("y", vTx(vCR)[1] - 180)
+            .text("内圈（20部落）");
+          vSvg
+            .append("text")
+            .attr("class", "zone-label")
+            .attr("x", vTx(vCR)[0])
+            .attr("y", vTx(vCR)[1] - 280)
+            .text("外圈（30部落）");
+
+          const vLeg = vSvg
+            .append("g")
+            .attr(
+              "transform",
+              `translate(${vW - vPad - 120},${vH - vPad - 30})`,
+            );
+          vLeg
+            .append("rect")
+            .attr("width", 12)
+            .attr("height", 12)
+            .attr("fill", "#b0d4f0")
+            .attr("stroke", "#7aa8c8");
+          vLeg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 11)
+            .attr("class", "legend-text")
+            .text("核心部落区");
+          vLeg
+            .append("rect")
+            .attr("width", 12)
+            .attr("height", 12)
+            .attr("y", 22)
+            .attr("fill", "#8ec8e8")
+            .attr("stroke", "#6a9ec0");
+          vLeg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 33)
+            .attr("class", "legend-text")
+            .text("内圈部落");
+          vLeg
+            .append("rect")
+            .attr("width", 12)
+            .attr("height", 12)
+            .attr("y", 44)
+            .attr("fill", "#6ab8d8")
+            .attr("stroke", "#5088a8");
+          vLeg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 55)
+            .attr("class", "legend-text")
+            .text("外圈部落");
+
+          const vBgRect = vSvg
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", vW)
+            .attr("height", vH)
+            .attr("fill", "transparent")
+            .style("pointer-events", "all");
+          const vRand = mulberry32(777);
+          function vPIP(px, py, d) {
+            if (!vPIP.c) {
+              vPIP.c = document.createElement("canvas");
+              vPIP.c.width = vW;
+              vPIP.c.height = vH;
+            }
+            const ctx = vPIP.c.getContext("2d");
+            ctx.clearRect(0, 0, vW, vH);
+            return ctx.isPointInPath(new Path2D(d), px, py);
+          }
+          function vGen(count, rd, id = null) {
+            const pts = [];
+            let t = 0;
+            while (pts.length < count && t < count * 400) {
+              const x = vPad + vRand() * (vW - 2 * vPad),
+                y = vPad + vRand() * (vH - 2 * vPad);
+              if (vPIP(x, y, rd) && (!id || !vPIP(x, y, id))) pts.push([x, y]);
+              t++;
+            }
+            while (pts.length < count) {
+              const x = vPad + vRand() * (vW - 2 * vPad),
+                y = vPad + vRand() * (vH - 2 * vPad);
+              if (vPIP(x, y, rd) && (!id || !vPIP(x, y, id))) pts.push([x, y]);
+            }
+            return pts;
+          }
+          const vCoreS = vGen(5, vCoreCP),
+            vInnerS = vGen(20, vInnerCP, vCoreCP),
+            vOuterS = vGen(
+              30,
+              d3.line().curve(d3.curveCatmullRomClosed)(vOuter.map(vTx)) + " Z",
+              vInnerCP,
+            );
+          const vAllS = [...vCoreS, ...vInnerS, ...vOuterS];
+          const vDelaunay = d3.Delaunay.from(vAllS),
+            vVoronoi = vDelaunay.voronoi([0, 0, vW, vH]);
+          const vPolys = [];
+          for (let i = 0; i < vAllS.length; i++) {
+            const cell = vVoronoi.cellPolygon(i);
+            if (cell && cell.length >= 3) {
+              vPolys.push({
+                idx: i,
+                verts: cell.map((p) => [p[0], p[1]]),
+                zone:
+                  i < 5
+                    ? "core-region"
+                    : i < 25
+                      ? "inner-ring"
+                      : "outer-fringe",
+                center: vAllS[i],
+              });
+            }
+          }
+
+          const tribeNames = [
+            "冰脊",
+            "炎谷",
+            "霜原",
+            "孤峰",
+            "裂谷",
+            "雷崖",
+            "云顶",
+            "月湾",
+            "日升",
+            "夕照",
+            "星落",
+            "晨曦",
+            "灰石",
+            "铁冠",
+            "银叶",
+            "金穗",
+            "铜钟",
+            "白墙",
+            "黑松",
+            "红崖",
+            "蓝河",
+            "绿丘",
+            "紫杉",
+            "黄沙",
+            "青池",
+            "碧波",
+            "苍岭",
+            "翠谷",
+            "丹霞",
+            "瀚海",
+            "雾沼",
+            "双塔",
+            "三河",
+            "四风",
+            "五谷",
+            "六角",
+            "七星",
+            "八荒",
+            "九曲",
+            "十方",
+            "百灵",
+            "千帆",
+            "万松",
+            "磐石",
+            "流沙",
+            "冰荒",
+            "雪原",
+            "风暴",
+            "巨熊",
+            "霜狼",
+            "战鹰",
+            "海象",
+            "驯鹿",
+            "白狐",
+            "雪枭",
+          ];
+          const vNames = new Array(vPolys.length).fill(""),
+            vDescs = new Array(vPolys.length).fill("");
+          const vCoreIdx = [];
+          vPolys.forEach((p, i) => {
+            if (p.zone === "core-region") vCoreIdx.push(i);
+          });
+          let shrineIdx = vCoreIdx[0];
+          vCoreIdx.forEach((i) => {
+            const d = Math.hypot(
+              vPolys[i].center[0] - vTx(vCR)[0],
+              vPolys[i].center[1] - vTx(vCR)[1],
+            );
+            if (
+              d <
+              Math.hypot(
+                vPolys[shrineIdx].center[0] - vTx(vCR)[0],
+                vPolys[shrineIdx].center[1] - vTx(vCR)[1],
+              )
+            )
+              shrineIdx = i;
+          });
+          vNames[shrineIdx] = "祖神祭坛";
+          vDescs[shrineIdx] =
+            "联盟圣地·祖神安眠之所。战魂议会在此召开，至高王在此加冕。";
+          let tnIdx = 0;
+          const vUN = new Set();
+          vUN.add("祖神祭坛");
+          for (let i = 0; i < vPolys.length; i++) {
+            if (vNames[i] === "") {
+              while (vUN.has(tribeNames[tnIdx % tribeNames.length])) tnIdx++;
+              vNames[i] = tribeNames[tnIdx % tribeNames.length] + "部落";
+              vUN.add(tribeNames[tnIdx % tribeNames.length]);
+              tnIdx++;
+              const z = vPolys[i].zone;
+              if (z === "core-region")
+                vDescs[i] = "核心部落·战魂议会成员。拥有完整的战魂传承体系。";
+              else if (z === "inner-ring")
+                vDescs[i] = "内圈部落·战魂议会成员。传承古老，战士勇猛。";
+              else vDescs[i] = "外圈部落·极北边陲。环境严酷，战士坚韧。";
+            }
+          }
+
+          const vTribesG = vSvg.append("g"),
+            vLabelsG = vSvg.append("g");
+          vPolys.forEach((poly, i) => {
+            const d =
+              poly.verts
+                .map(
+                  (v, j) =>
+                    (j === 0 ? "M" : "L") +
+                    ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
+                )
+                .join(" ") + " Z";
+            // 只设置类名，颜色完全由 CSS 控制
+            const path = vTribesG
+              .append("path")
+              .attr("d", d)
+              .attr("class", `tribe ${poly.zone}`)
+              .datum(i);
+            path.append("title").text(vNames[i]);
+            const centroid = d3.polygonCentroid(poly.verts);
+            const fontSize =
+              poly.zone === "core-region"
+                ? "12px"
+                : poly.zone === "inner-ring"
+                  ? "9px"
+                  : "7px";
+            vLabelsG
+              .append("text")
+              .attr("x", centroid[0])
+              .attr("y", centroid[1])
+              .attr("class", "tribe-label")
+              .attr("dy", "0.35em")
+              .style("font-size", fontSize)
+              .text(vNames[i]);
+          });
+
+          const vCloneLayer = vSvg.append("g"),
+            vDetailLayer = vSvg.append("g");
+          let vSelectedIdx = null;
+
+          function vShowDetail(idx) {
+            const poly = vPolys[idx],
+              name = vNames[idx];
+            const cx = poly.center[0],
+              cy = poly.center[1],
+              sf = 2.5;
+            const cloneD =
+              poly.verts
+                .map(
+                  (v, j) =>
+                    (j === 0 ? "M" : "L") +
+                    ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
+                )
+                .join(" ") + " Z";
+            // 克隆体使用相同的类名，颜色完全继承 CSS
+            vCloneLayer
+              .append("path")
+              .attr("d", cloneD)
+              .attr("class", `clone-tribe ${poly.zone}`)
+              .attr("stroke", "#fff")
+              .attr(
+                "transform",
+                `translate(${vW / 2 - cx * sf},${vH / 2 - cy * sf}) scale(${sf})`,
+              );
+            const desc = vDescs[idx];
+            const lines = desc.split("。").filter((l) => l.trim() !== "");
+            const bgH = 50 + lines.length * 22;
+            const dY = vH / 2 + 145;
+            const dG = vDetailLayer
+              .append("g")
+              .attr("transform", `translate(${vW / 2},${dY})`);
+            dG.append("rect")
+              .attr("x", -220)
+              .attr("y", -30)
+              .attr("width", 440)
+              .attr("height", bgH)
+              .attr("fill", "#0b1a2e")
+              .attr("opacity", 0.8)
+              .attr("rx", 8);
+            dG.append("text")
+              .attr("class", "detail-text")
+              .attr("y", -5)
+              .text(name);
+            lines.forEach((l, j) => {
+              dG.append("text")
+                .attr("class", "detail-sub")
+                .attr("y", 20 + j * 22)
+                .text(l.trim());
+            });
+          }
+
+          function vClearDetail() {
+            vCloneLayer.selectAll("*").remove();
+            vDetailLayer.selectAll("*").remove();
+            vSelectedIdx = null;
+          }
+
+          vTribesG.selectAll(".tribe").on("click", function (e, i) {
+            e.stopPropagation();
+            const s = d3.select(this);
+            if (vSelectedIdx === i) {
+              vClearDetail();
+              vTribesG.selectAll(".tribe").classed("dimmed", false);
+              return;
+            }
+            vClearDetail();
+            vTribesG.selectAll(".tribe").classed("dimmed", false);
+            s.style("opacity", "0");
+            vTribesG.selectAll(".tribe").each(function () {
+              if (this !== s.node()) d3.select(this).classed("dimmed", true);
+            });
+            vSelectedIdx = i;
+            vShowDetail(i);
+          });
+
+          vBgRect.on("click", () => {
+            vClearDetail();
+            vTribesG
+              .selectAll(".tribe")
+              .classed("dimmed", false)
+              .style("opacity", null);
+          });
+        }
+
+        initViglandMap();
+
+        // ========== 视图切换 ==========
+        const worldDiv = document.getElementById("world-view"),
+          donghuaDiv = document.getElementById("donghua-view"),
+          westernDiv = document.getElementById("western-view"),
+          viglandDiv = document.getElementById("vigland-view"),
+          returnBtn = document.getElementById("return-btn");
+
+        function hideAll() {
+          worldDiv.style.display = "none";
+          donghuaDiv.style.display = "none";
+          westernDiv.style.display = "none";
+          viglandDiv.style.display = "none";
+        }
+        function showDonghuaView() {
+          hideAll();
+          donghuaDiv.style.display = "block";
+          returnBtn.style.display = "block";
+        }
+        function showWesternView() {
+          hideAll();
+          westernDiv.style.display = "block";
+          returnBtn.style.display = "block";
+        }
+        function showViglandView() {
+          hideAll();
+          viglandDiv.style.display = "block";
+          returnBtn.style.display = "block";
+        }
+        function showWorldView() {
+          hideAll();
+          worldDiv.style.display = "block";
+          returnBtn.style.display = "none";
+          clearDetail();
+          provincesG
+            .selectAll(".province")
+            .classed("dimmed", false)
+            .style("opacity", null);
+        }
+
+        returnBtn.addEventListener("click", showWorldView);
+      })();
+    </script>
+  </body>
+</html>
