@@ -2,23 +2,20 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <title>四方大陆 · 国内政地图</title>
+    <title>四方大陆 · 三国内政地图</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
       body {
         margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
+        padding: 0;
+        overflow: hidden;          /* 禁止滚动条，强制全屏 */
         background: #1a1a2e;
         font-family: "Noto Serif SC", "SimSun", "宋体", serif;
       }
       .map-wrapper {
         position: relative;
-        width: 800px;
-        height: 800px;
+        width: 100vw;              /* 视口宽度 */
+        height: 100vh;             /* 视口高度 */
       }
       #world-view,
       #donghua-view,
@@ -322,7 +319,6 @@
         opacity: 0.15 !important;
         pointer-events: none;
       }
-      /* 克隆体也使用相同的颜色，无需在JS中设置 */
       #vigland-view .clone-tribe.core-region {
         fill: #b0d4f0;
         fill-opacity: 0.9;
@@ -400,10 +396,6 @@
     </style>
   </head>
   <body>
-     <a href="index.html">
-          <button class="my-button">主页</button>
-        </a>
-
     <div class="map-wrapper">
       <button class="return-btn" id="return-btn" style="display: none">
         ← 返回四方大陆
@@ -424,7 +416,8 @@
           .select("#world-map")
           .attr("viewBox", `0 0 ${W} ${H}`)
           .attr("width", W)
-          .attr("height", H);
+          .attr("height", H)
+          .attr("preserveAspectRatio", "xMidYMid slice");   // 铺满全屏，可能裁剪但比例不变形
         worldSvg
           .append("rect")
           .attr("width", W)
@@ -648,7 +641,8 @@
           .select("#donghua-map")
           .attr("viewBox", `0 0 ${tW} ${tH}`)
           .attr("width", tW)
-          .attr("height", tH);
+          .attr("height", tH)
+          .attr("preserveAspectRatio", "xMidYMid slice");   // 铺满视图
         const outerPointsRaw = [
           [500, 50],
           [550, 60],
@@ -1152,7 +1146,8 @@
             .select("#western-map")
             .attr("viewBox", `0 0 ${wW} ${wH}`)
             .attr("width", wW)
-            .attr("height", wH);
+            .attr("height", wH)
+            .attr("preserveAspectRatio", "xMidYMid slice");   // 铺满视图
           const wOuter = [
             [200, 80],
             [280, 55],
@@ -1752,7 +1747,8 @@
             .select("#vigland-map")
             .attr("viewBox", `0 0 ${vW} ${vH}`)
             .attr("width", vW)
-            .attr("height", vH);
+            .attr("height", vH)
+            .attr("preserveAspectRatio", "xMidYMid slice");   // 铺满视图
           const vOuter = [
             [250, 70],
             [330, 50],
@@ -2047,7 +2043,6 @@
                     ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
                 )
                 .join(" ") + " Z";
-            // 只设置类名，颜色完全由 CSS 控制
             const path = vTribesG
               .append("path")
               .attr("d", d)
@@ -2089,7 +2084,6 @@
                     ` ${v[0].toFixed(2)} ${v[1].toFixed(2)}`,
                 )
                 .join(" ") + " Z";
-            // 克隆体使用相同的类名，颜色完全继承 CSS
             vCloneLayer
               .append("path")
               .attr("d", cloneD)
